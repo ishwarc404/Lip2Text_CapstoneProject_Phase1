@@ -13,11 +13,13 @@
 #input_area
 {
     padding-right: 5%;
+    padding-left: 25%;
+    padding-top: 1%;
 }
 
 #middle_line
 {
-    height: 300px;
+    height: 350px;
     border-left: black 1px solid;
     padding-left: 4%;
 }
