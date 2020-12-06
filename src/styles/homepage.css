@@ -3,3 +3,26 @@
     height: 50px;
     background-color: rgb(228, 228, 228);
 }
+
+#body
+{
+    padding-top:5%;
+}
+
+
+#input_area
+{
+    padding-right: 5%;
+}
+
+#middle_line
+{
+    height: 300px;
+    border-left: black 1px solid;
+    padding-left: 4%;
+}
+
+#output_area
+{
+    padding-top: 2px;
+}
