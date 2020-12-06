@@ -1,0 +1,4 @@
+Trimming Failed for /Users/ishwar/Desktop/Capstone/2021/inputvideos_unprocessed/bye/53e5ff71-f5f7-472b-a13d-c7ad9cbb7884(1).MOV
+Trimming Failed for /Users/ishwar/Desktop/Capstone/2021/inputvideos_unprocessed/bye/53e5ff71-f5f7-472b-a13d-c7ad9cbb7884.MOV
+Trimming Failed for /Users/ishwar/Desktop/Capstone/2021/inputvideos_unprocessed/hello/8d80f191-cae1-4aa6-b2a6-9c5372705aeb.MP4
+Trimming Failed for /Users/ishwar/Desktop/Capstone/2021/inputvideos_unprocessed/hello/IMG_1278.MOVTrimming Failed for /Users/ishwar/Desktop/Capstone/Source Code/Server/inputvideos_unprocessed/hello/IMG_1282 6.50.58 AM.MOV 

@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
 import os,re
+import json
 from PIL import Image
 app = Flask(__name__)
 CORS(app)
@@ -13,7 +14,7 @@ app.config['UPLOAD_FOLDER'] = "inputvideos_unprocessed"
 
 @app.route("/bigbang",methods=["POST"])
 def bigbang():
-    mypaths = ["inputvideos_unprocessed","inputvideos_processed","inputvideos_split","datasets"]
+    mypaths = ["inputvideos_unprocessed","inputvideos_processed","inputvideos_split"]
     for parentfolder in mypaths:
         for root, dirs, files in os.walk(parentfolder):
             for file in files:
@@ -48,6 +49,7 @@ def areacalculation():
 
 @app.route("/training")
 def training():
+    os.system("python3 master_model.py")
     return "200"
 
 @app.route("/download")
@@ -59,7 +61,8 @@ def download():
 
 @app.route("/prediction")
 def prediction():
-    return "200"
+    prediction = {"word":"hello"}
+    return json.dumps(prediction)
 
 
 @app.route("/signature",methods=["GET","POST"])
