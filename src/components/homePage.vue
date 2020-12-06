@@ -47,8 +47,8 @@
   </div>
 </div>
 <hr style="width:50%; margin-left:25%;margin-top:2%">
-<div id="results_body">
-<img :src="image_bytes" alt="">
+<div id="results_body" class="d-flex justify-content-center">
+<img :src="signature_url" style="height:50vh" alt="">
 </div>
 
 </div>
@@ -70,7 +70,7 @@ export default {
       prediction_icon: "not_gray",
       training_icon: "not_gray",
       signature_icon: "not_gray",
-      image_bytes:null,
+      signature_url:"https://s3.us-east-1.amazonaws.com/deltax.adpreviewtool/Images/Signature.jpg",
 
       videos:[],
     };
@@ -136,12 +136,8 @@ export default {
           }else{
             url = "http://localhost:5000/signature?dataset=bye"
           }
-          let image_bytes = await axios.get(url);
-          this.image_bytes = image_bytes.data;
-          // var blob = new Blob( [ image_bytes ], { type: "image/png" } );
-          // var imageUrl = URL.createObjectURL( blob );
-          // console.log(imageUrl)
-          
+          await axios.get(url);
+          this.signature_url = "https://s3.us-east-1.amazonaws.com/deltax.adpreviewtool/Images/Signature.jpg";
           this.signature_icon = "green";
           console.log("here",this.signature_icon)
           break;
