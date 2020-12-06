@@ -3,13 +3,23 @@ from flask_cors import CORS
 import pandas as pd 
 import matplotlib.pyplot as plt
 import matplotlib
-import os
+import os,re
 from PIL import Image
 app = Flask(__name__)
 CORS(app)
 
 
 app.config['UPLOAD_FOLDER'] = "inputvideos_unprocessed"
+
+@app.route("/bigbang",methods=["POST"])
+def bigbang():
+    mypaths = ["inputvideos_unprocessed","inputvideos_processed","inputvideos_split","datasets"]
+    for parentfolder in mypaths:
+        for root, dirs, files in os.walk(parentfolder):
+            for file in files:
+                os.remove(os.path.join(root, file))
+    print("Done")
+    return "200"
 
 @app.route("/mediaUpload",methods=["POST"])
 def mediaUpload():
@@ -40,6 +50,13 @@ def areacalculation():
 def training():
     return "200"
 
+@app.route("/download")
+def download():
+    dataset = request.args.get("dataset")
+    dataset_path = "datasets/{}data.csv".format(dataset)
+    return send_file(dataset_path)
+    return "200"
+
 @app.route("/prediction")
 def prediction():
     return "200"
@@ -58,6 +75,8 @@ def signature():
         y_values = eachrow[10:91]
         plt.plot(x_values,y_values)
 
+    plt.xlabel("Frames")
+    plt.ylabel("Relative Area")
     plt.savefig('Signature.jpg',dpi=150)
     #posting image to s3
     import boto3
@@ -70,6 +89,8 @@ def signature():
     key_name = "Images/{}".format(file_name)
     
     s3.upload_file(file_name, bucket, key_name)
+    import time
+    time.sleep(3)
     return "200"
 
 if __name__ == "__main__":
