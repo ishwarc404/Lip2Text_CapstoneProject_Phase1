@@ -2,7 +2,8 @@
 <div>
 <div id="header" class="d-flex">
 <p style="padding-top:15px; padding-left:10px; font-family:Helvetica;">Welcome to Lip2Text</p>
-<p style="padding-top:15px; padding-right:10px; font-family:Helvetica;" class="ml-auto">Capstone Project 2020</p>
+<p style="padding-top:15px; padding-right:20px; font-family:Helvetica;" class="ml-auto">Capstone Project 2020</p>
+<a v-on:click="bigbang()"><v-icon large color="grey" style="padding-top:10px; font-size:30px;padding-right:10px;" >mdi-delete-sweep</v-icon></a>
 </div>
 
 <div class="d-flex justify-content-start" id="body">
@@ -49,8 +50,13 @@
 <hr style="width:50%; margin-left:25%;margin-top:2%">
 <div id="results_body" class="d-flex justify-content-center">
   <div v-if="operation_type_chosen=='Signature'">
-    <v-btn v-on:click="reloadSignature()"><v-icon large :color="media_icon" style="font-size:30px;">mdi-backup-restore</v-icon></v-btn>
+    <v-btn v-on:click="reloadSignature()"><v-icon large color="gray" style="font-size:30px;">mdi-backup-restore</v-icon></v-btn>
     <img :src="signature_url" style="height:50vh" alt="">
+  </div>
+
+  <div class="d-flex justify-content-center" v-if="operation_type_chosen=='Training' && isTrainingDone">
+    <p style="padding-top:20px;font-size:40px;font-family:Helvetica;">Click to download your new dataset</p>
+    <a :href="'http://localhost:5000/download?dataset='+word_chosen"><v-icon large color="grey" style="padding-top:10px; font-size:70px;padding-right:10px;" >mdi-arrow-down-bold-box</v-icon></a>
   </div>
 
 </div>
@@ -75,11 +81,21 @@ export default {
       training_icon: "not_gray",
       signature_icon: "not_gray",
       signature_url:null,
-
+      isTrainingDone: false,
       videos:[],
     };
   },
   methods: {
+    //this function deletes all the data related to the demo
+    async bigbang()
+    {
+      var password = prompt("Please enter password:")
+      if(password=="boom"){
+        await axios.post("http://localhost:5000/bigbang");
+      }
+      
+    },
+
     async beginProcess() {
 
       if(this.videos.length == 0)
@@ -125,7 +141,8 @@ export default {
         case("Training"): 
         {
           await axios.get("http://localhost:5000/training");
-          this.area_icon = "green";
+          this.training_icon = "green";
+          this.isTrainingDone = true;
           break;
         }
         case("Prediction"):{
@@ -143,7 +160,6 @@ export default {
           await axios.get(url);
           this.signature_url = "https://s3.us-east-1.amazonaws.com/deltax.adpreviewtool/Images/Signature.jpg";
           this.signature_icon = "green";
-          console.log("here",this.signature_icon)
           break;
         }
       }
