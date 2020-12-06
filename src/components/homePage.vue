@@ -22,6 +22,7 @@
           label="Type"
           solo
         ></v-select>
+    
      <v-select
      v-if="operation_type_chosen=='Training'"
    style="width:250px;"
@@ -54,11 +55,24 @@
     <img :src="signature_url" style="height:50vh" alt="">
   </div>
 
-  <div class="d-flex justify-content-center" v-if="operation_type_chosen=='Training' && isTrainingDone">
+  <div v-if="operation_type_chosen=='Dataset Generation' && isGenerationDone">
+    <div class="d-flex justify-content-center">
     <p style="padding-top:20px;font-size:40px;font-family:Helvetica;">Click to download your new dataset</p>
     <a :href="'http://localhost:5000/download?dataset='+word_chosen"><v-icon large color="grey" style="padding-top:10px; font-size:70px;padding-right:10px;" >mdi-arrow-down-bold-box</v-icon></a>
+    </div>
+    <div class="d-flex justify-content-center">
+      <v-btn v-on:click="trainDataset()">Train model with new dataset</v-btn>
+    </div>
   </div>
 
+<div v-if="operation_type_chosen=='Prediction' && isPredictionDone">
+    <div class="d-flex justify-content-center">
+    <p style="padding-top:20px;font-size:40px;font-family:Helvetica;">Predicted Word:</p>
+    </div>
+    <div class="d-flex justify-content-center">
+    <p style="padding-top:20px;font-size:40px;font-family:Helvetica;">{{predictedWord}}</p>
+    </div>
+  </div>
 </div>
 
 </div>
@@ -69,9 +83,9 @@ import axios from "axios";
 export default {
   data() {
     return {
-      operation_type:["Training", "Prediction","Signature"],
+      operation_type:["Dataset Generation", "Prediction","Signature"],
       words: ["Hello", "Bye"],
-      operation_type_chosen: "Training",
+      operation_type_chosen: "Dataset Generation",
       word_chosen:"Hello",
       media_icon: "not_gray",
       trimming_icon: "not_gray",
@@ -81,7 +95,9 @@ export default {
       training_icon: "not_gray",
       signature_icon: "not_gray",
       signature_url:null,
-      isTrainingDone: false,
+      isGenerationDone: false,
+      isPredictionDone:false,
+      predictedWord:null,
       videos:[],
     };
   },
@@ -94,6 +110,11 @@ export default {
         await axios.post("http://localhost:5000/bigbang");
       }
       
+    },
+  
+    async trainDataset()
+    {
+      await axios.post("http://localhost:5000/training");
     },
 
     async beginProcess() {
@@ -135,19 +156,27 @@ export default {
       //triggering the area calculation procedure
       await axios.get("http://localhost:5000/areacalculation");
       this.area_icon = "green";
-
       switch(this.operation_type_chosen)
       {
         case("Training"): 
         {
           await axios.get("http://localhost:5000/training");
           this.training_icon = "green";
-          this.isTrainingDone = true;
+          this.isGenerationDone = true;
           break;
         }
+
+        case("Dataset Generation"): 
+        {
+          this.isGenerationDone = true;
+          break;
+        }
+
         case("Prediction"):{
-          await axios.get("http://localhost:5000/prediction");
-          this.area_icon = "green";
+          let data = await axios.get("http://localhost:5000/prediction");
+          this.prediction_icon = "green";
+          this.predictedWord = data.data.word
+          this.isPredictionDone = true;
           break;
         }
         case("Signature"):{
