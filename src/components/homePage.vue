@@ -9,7 +9,7 @@
   <div id="input_area">
     <div class="d-flex">
     <p style="padding-top:20px;font-size:50px;font-family:Helvetica;">Upload</p>
-    <input type="file" ref="video_upload" style="display:none;" @change="mediaUpload">
+    <input type="file" ref="video_upload" style="display:none;" @change="mediaUpload" multiple>
     <button type="text" @click="$refs.video_upload.click()">
       <v-icon large color="green" style="font-size:100px;">mdi-arrow-up-bold-box-outline</v-icon>
     </button>
@@ -48,7 +48,11 @@
 </div>
 <hr style="width:50%; margin-left:25%;margin-top:2%">
 <div id="results_body" class="d-flex justify-content-center">
-<img :src="signature_url" style="height:50vh" alt="">
+  <div v-if="operation_type_chosen=='Signature'">
+    <v-btn v-on:click="reloadSignature()"><v-icon large :color="media_icon" style="font-size:30px;">mdi-backup-restore</v-icon></v-btn>
+    <img :src="signature_url" style="height:50vh" alt="">
+  </div>
+
 </div>
 
 </div>
@@ -70,7 +74,7 @@ export default {
       prediction_icon: "not_gray",
       training_icon: "not_gray",
       signature_icon: "not_gray",
-      signature_url:"https://s3.us-east-1.amazonaws.com/deltax.adpreviewtool/Images/Signature.jpg",
+      signature_url:null,
 
       videos:[],
     };
@@ -78,11 +82,11 @@ export default {
   methods: {
     async beginProcess() {
 
-      // if(this.videos.length == 0)
-      // {
-      //   alert("Please upload atleast 1 video file.")
-      //   return;
-      // }
+      if(this.videos.length == 0)
+      {
+        alert("Please upload atleast 1 video file.")
+        return;
+      }
 
       this.media_icon = "gray";
       this.trimming_icon = "gray";
@@ -92,29 +96,29 @@ export default {
       this.training_icon= "gray",
       this.signature_icon= "gray"
 
-      //uploading all the videos to the database first
-      // for (var i = 0; i < this.videos.length; i++) {
-      //   let video = this.videos[i];
-      //   var formData = new FormData();
-      //   formData.append("video_tag",this.word_chosen);
-      //   formData.append("video",video);
-      //   await axios.post("http://localhost:5000/mediaUpload", formData, {
-      //   headers: {
-      //       'Content-Type': 'multipart/form-data'}})
-      // }
-      // this.media_icon = "green";
+      // uploading all the videos to the database first
+      for (var i = 0; i < this.videos.length; i++) {
+        let video = this.videos[i];
+        var formData = new FormData();
+        formData.append("video_tag",this.word_chosen);
+        formData.append("video",video);
+        await axios.post("http://localhost:5000/mediaUpload", formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'}})
+      }
+      this.media_icon = "green";
 
-      // //triggering the trimmer to act on the uploaded videos
-      // await axios.get("http://localhost:5000/trimming");
-      // this.trimming_icon = "green";
+      //triggering the trimmer to act on the uploaded videos
+      await axios.get("http://localhost:5000/trimming");
+      this.trimming_icon = "green";
 
-      // //triggering the splitter to act on the uploaded videos
-      // await axios.get("http://localhost:5000/splitting");
-      // this.splitting_icon = "green";
+      //triggering the splitter to act on the uploaded videos
+      await axios.get("http://localhost:5000/splitting");
+      this.splitting_icon = "green";
 
-      // //triggering the area calculation procedure
-      // await axios.get("http://localhost:5000/areacalculation");
-      // this.area_icon = "green";
+      //triggering the area calculation procedure
+      await axios.get("http://localhost:5000/areacalculation");
+      this.area_icon = "green";
 
       switch(this.operation_type_chosen)
       {
@@ -144,6 +148,18 @@ export default {
         }
       }
     
+    },
+
+    async reloadSignature(){
+      let url;
+      this.signature_url = null; //just to force reload it once
+      if(this.word_chosen == "Hello"){
+            url = "http://localhost:5000/signature?dataset=hello"
+          }else{
+            url = "http://localhost:5000/signature?dataset=bye"
+          }
+          await axios.get(url);
+          this.signature_url = "https://s3.us-east-1.amazonaws.com/deltax.adpreviewtool/Images/Signature.jpg";
     },
 
     async mediaUpload(videoEvent) {
